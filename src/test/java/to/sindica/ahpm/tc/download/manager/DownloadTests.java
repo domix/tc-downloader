@@ -1,11 +1,14 @@
 package to.sindica.ahpm.tc.download.manager;
 
 import junit.framework.Assert;
+import org.fest.assertions.FileAssert;
 import org.fest.swing.timing.Condition;
 import org.fest.swing.timing.Pause;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Observable;
@@ -49,6 +52,15 @@ public class DownloadTests {
 
     waitUntilDownloadIsDone(download);
     Assert.assertEquals(Download.COMPLETE, download.getStatus());
+  }
+
+  @Test
+  public void shouldDownloadFileAndPutInADesiredPlace() throws IOException {
+    Download download = new Download(url, "build");
+    waitUntilDownloadIsDone(download);
+    Assert.assertEquals(Download.COMPLETE, download.getStatus());
+
+    Assert.assertTrue(download.getDestinationFile().exists());
   }
 
   @Test

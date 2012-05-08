@@ -7,6 +7,7 @@ package to.sindica.ahpm.tc.download.manager;
  * Time: 12:55
  * To change this template use File | Settings | File Templates.
  */
+import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
@@ -33,9 +34,22 @@ class Download extends Observable implements Runnable {
   private int size; // size of download in bytes
   private int downloaded; // number of bytes downloaded
   private int status; // current status of download
+  private String destination = "";
+  private File destinationFile = null;
 
   // Constructor for Download.
   public Download(URL url) {
+    this.url = url;
+    size = -1;
+    downloaded = 0;
+    status = DOWNLOADING;
+
+    // Begin the download.
+    download();
+  }
+
+  public Download(URL url, String destination) {
+    this.destination = destination;
     this.url = url;
     size = -1;
     downloaded = 0;
@@ -102,6 +116,10 @@ class Download extends Observable implements Runnable {
     return fileName.substring(fileName.lastIndexOf('/') + 1);
   }
 
+  public File getDestinationFile() {
+    return destinationFile;
+  }
+
   // Download file.
   public void run() {
     RandomAccessFile file = null;
@@ -135,8 +153,13 @@ class Download extends Observable implements Runnable {
         stateChanged();
       }
 
+      if(destination.length() > 0 && !destination.endsWith("/")) {
+        destination = destination + "/";
+      }
+
+      destinationFile = new File(destination + getFileName(url));
       // Open file and seek to the end of it.
-      file = new RandomAccessFile(getFileName(url), "rw");
+      file = new RandomAccessFile(destinationFile, "rw");
       file.seek(downloaded);
 
       stream = connection.getInputStream();
