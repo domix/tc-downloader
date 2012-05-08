@@ -1,0 +1,50 @@
+apply plugin: 'java'
+//apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'project-report'
+apply plugin: 'codenarc'
+//apply plugin: 'checkstyle'
+
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+version = '0.1-SNAPSHOT'
+group = 'to.sindica.ahpm.tc'
+description = 'clickOnero Core Services'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  //groovy 'org.codehaus.groovy:groovy-all:2.0.0-beta-2'
+
+  compile 'commons-io:commons-io:2.3'
+
+  testCompile 'junit:junit:4.+'
+  testCompile 'org.easytesting:fest-assert:1.4'
+  testCompile 'org.easytesting:fest-swing:1.2.1'
+
+
+}
+
+task makeDirs(description: 'make all dirs for project setup') << {
+  def sources = [sourceSets.main, sourceSets.test]
+  sources*.allSource*.srcDirs.flatten().each { File srcDir ->
+    println "making $srcDir"
+    srcDir.mkdirs()
+  }
+}
+
+task wrap(type: Wrapper, description: "create a gradlew") {
+  gradleVersion = '1.0-milestone-5'
+}
+
+buildscript {
+  apply from: 'https://github.com/valkolovos/gradle_cobertura/raw/master/repo/gradle_cobertura/gradle_cobertura/1.2/coberturainit.gradle'
+}
+
+cobertura {
+  //coverageSourceDirs << project.sourceSets.main.groovy.srcDirs
+}
