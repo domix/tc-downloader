@@ -83,7 +83,7 @@ class DownloadsTableModel extends AbstractTableModel implements Observer {
       case 2: // Progress
         return new Float(download.getProgress());
       case 3: // Status
-        return Download.STATUSES[download.getStatus()];
+        return download.getStatus();
     }
     return "";
   }

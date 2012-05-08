@@ -38,7 +38,7 @@ public class DownloadTests {
     waitUntilDownloadIsDone(download);
     download.getSize();
     download.getProgress();
-    Assert.assertEquals(Download.COMPLETE, download.getStatus());
+    Assert.assertEquals(Status.COMPLETE, download.getStatus());
     Assert.assertEquals(file, download.getUrl());
   }
 
@@ -51,14 +51,14 @@ public class DownloadTests {
     download.resume();
 
     waitUntilDownloadIsDone(download);
-    Assert.assertEquals(Download.COMPLETE, download.getStatus());
+    Assert.assertEquals(Status.COMPLETE, download.getStatus());
   }
 
   @Test
   public void shouldDownloadFileAndPutInADesiredPlace() throws IOException {
     Download download = new Download(url, "build");
     waitUntilDownloadIsDone(download);
-    Assert.assertEquals(Download.COMPLETE, download.getStatus());
+    Assert.assertEquals(Status.COMPLETE, download.getStatus());
 
     Assert.assertTrue(download.getDestinationFile().exists());
   }
@@ -67,7 +67,7 @@ public class DownloadTests {
   public void shouldCancel() throws MalformedURLException {
     Download download = new Download(url);
     download.cancel();
-    Assert.assertEquals(Download.CANCELLED, download.getStatus());
+    Assert.assertEquals(Status.CANCELLED, download.getStatus());
   }
 
   void waitUntilDownloadIsDone(final Download download) {
@@ -75,7 +75,7 @@ public class DownloadTests {
 
       @Override
       public boolean test() {
-        return download.getStatus() == Download.COMPLETE;
+        return download.getStatus() == Status.COMPLETE;
       }
     }, 1000 * 60 * 2);
   }

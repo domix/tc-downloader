@@ -237,21 +237,21 @@ receive notifications from it. */
 currently selected download's status. */
   private void updateButtons() {
     if (selectedDownload != null) {
-      int status = selectedDownload.getStatus();
+      Status status = selectedDownload.getStatus();
       switch (status) {
-        case Download.DOWNLOADING:
+        case DOWNLOADING:
           pauseButton.setEnabled(true);
           resumeButton.setEnabled(false);
           cancelButton.setEnabled(true);
           clearButton.setEnabled(false);
           break;
-        case Download.PAUSED:
+        case PAUSED:
           pauseButton.setEnabled(false);
           resumeButton.setEnabled(true);
           cancelButton.setEnabled(true);
           clearButton.setEnabled(false);
           break;
-        case Download.ERROR:
+        case ERROR:
           pauseButton.setEnabled(false);
           resumeButton.setEnabled(true);
           cancelButton.setEnabled(false);

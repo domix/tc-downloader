@@ -15,25 +15,15 @@ import java.net.URL;
 import java.util.Observable;
 
 // This class downloads a file from a URL.
-class Download extends Observable implements Runnable {
+public class Download extends Observable implements Runnable {
 
   // Max size of download buffer.
   private static final int MAX_BUFFER_SIZE = 1024;
 
-  // These are the status names.
-  public static final String STATUSES[] = {"Downloading", "Paused", "Complete", "Cancelled", "Error"};
-
-  // These are the status codes.
-  public static final int DOWNLOADING = 0;
-  public static final int PAUSED = 1;
-  public static final int COMPLETE = 2;
-  public static final int CANCELLED = 3;
-  public static final int ERROR = 4;
-
   private URL url; // download URL
   private int size; // size of download in bytes
   private int downloaded; // number of bytes downloaded
-  private int status; // current status of download
+  private Status status; // current status of download
   private String destination = "";
   private File destinationFile = null;
 
@@ -42,7 +32,7 @@ class Download extends Observable implements Runnable {
     this.url = url;
     size = -1;
     downloaded = 0;
-    status = DOWNLOADING;
+    status = Status.DOWNLOADING;
 
     // Begin the download.
     download();
@@ -53,7 +43,7 @@ class Download extends Observable implements Runnable {
     this.url = url;
     size = -1;
     downloaded = 0;
-    status = DOWNLOADING;
+    status = Status.DOWNLOADING;
 
     // Begin the download.
     download();
@@ -75,32 +65,32 @@ class Download extends Observable implements Runnable {
   }
 
   // Get this download's status.
-  public int getStatus() {
+  public Status getStatus() {
     return status;
   }
 
   // Pause this download.
   public void pause() {
-    status = PAUSED;
+    status = Status.PAUSED;
     stateChanged();
   }
 
   // Resume this download.
   public void resume() {
-    status = DOWNLOADING;
+    status = Status.DOWNLOADING;
     stateChanged();
     download();
   }
 
   // Cancel this download.
   public void cancel() {
-    status = CANCELLED;
+    status = Status.CANCELLED;
     stateChanged();
   }
 
   // Mark this download as having an error.
   private void error() {
-    status = ERROR;
+    status = Status.ERROR;
     stateChanged();
   }
 
@@ -163,7 +153,7 @@ class Download extends Observable implements Runnable {
       file.seek(downloaded);
 
       stream = connection.getInputStream();
-      while (status == DOWNLOADING) {
+      while (status == Status.DOWNLOADING) {
         /* Size buffer according to how much of the
            file is left to download. */
         byte buffer[];
@@ -185,8 +175,8 @@ class Download extends Observable implements Runnable {
       }
 
       /* Change status to complete if this point was reached because downloading has finished. */
-      if (status == DOWNLOADING) {
-        status = COMPLETE;
+      if (status == Status.DOWNLOADING) {
+        status = Status.COMPLETE;
         stateChanged();
       }
     } catch (Exception e) {
