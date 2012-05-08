@@ -22,20 +22,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DownloadTests {
   URL url;
   String file = "http://media.clickonero.com/mx/deals-2012/2012_05_07_libellule/libelule-deal.jpg";
-  public static final AtomicInteger counter = new AtomicInteger(0);
 
   @Before
   public void setup() throws MalformedURLException {
     url = new URL(file);
-    counter.set(0);
   }
 
   @Test
   public void shouldDownloadAFile() throws MalformedURLException {
     Download download = new Download(url);
-    download.addObserver(new DownloadObserver());
 
-    waitUntilDownloadIsDone();
+    waitUntilDownloadIsDone(download);
     download.getSize();
     download.getProgress();
     Assert.assertEquals(Download.COMPLETE, download.getStatus());
@@ -46,13 +43,11 @@ public class DownloadTests {
   public void shouldResume() throws MalformedURLException {
     Download download = new Download(url);
 
-    download.addObserver(new DownloadObserver());
-
     download.pause();
     Pause.pause(100);
     download.resume();
 
-    waitUntilDownloadIsDone();
+    waitUntilDownloadIsDone(download);
     Assert.assertEquals(Download.COMPLETE, download.getStatus());
   }
 
@@ -63,27 +58,13 @@ public class DownloadTests {
     Assert.assertEquals(Download.CANCELLED, download.getStatus());
   }
 
-  void waitUntilDownloadIsDone() {
-    Pause.pause(new Condition("Wait until download is done.") {
+  void waitUntilDownloadIsDone(final Download download) {
+    Pause.pause(new Condition("Wait until download is complete.") {
 
       @Override
       public boolean test() {
-        return counter.get() > 0;
+        return download.getStatus() == Download.COMPLETE;
       }
     }, 1000 * 60 * 2);
-  }
-}
-
-class DownloadObserver implements Observer {
-  public void update(Observable observable, Object o) {
-    if (observable instanceof Download) {
-      Download d = (Download) observable;
-      String status = Download.STATUSES[d.getStatus()];
-      System.out.println(status);
-
-      if (Download.STATUSES[2].equals(status)) {
-        DownloadTests.counter.incrementAndGet();
-      }
-    }
   }
 }
